@@ -1,0 +1,387 @@
+Diventra v3.5.2 — 2026-09-29
+Historical constant-yield projection; displayed assumptions and annual yields; dividend event hover/guides; right value axes; available next distribution amounts; compact columns and exterior year buttons. 49 regression checks and two startup checks passed.
+
+Diventra v3.5.1 — 2026-09-29
+Chart month order; calendar-day hover; active-account totals; per-connection foreign keys; projected share-price correction. 44 regression checks passed.
+
+DIVENTRA - VERSION HISTORY
+Newest version first
+Compiled September 28, 2026
+
+This history combines the available release notes, source changes, validation
+records, and development conversations. Documented versions run from v3.5 back
+to v3.2. Earlier release notes were not available, so earlier version numbers
+and feature-introduction dates have not been guessed.
+
+==========================================================================
+VERSION 3.5
+Diventra-only data storage and calendar-aware chart inspection
+
+- New users create only %LOCALAPPDATA%\Diventra. Removed legacy-directory
+  creation during import. Normal database and preference writes use Diventra.
+- On startup, copy legacy database, preferences, and other files to a staging
+  folder; verify all file hashes and SQLite integrity before publishing them.
+- Delete legacy files only after successful verification. New Diventra data
+  takes precedence; conflicts preserve old files rather than overwrite data.
+- Windows migration refuses files open for writing and protects the source
+  files while copying. SQLite recovery sidecars cause migration to stop with
+  instructions to close/recover the old app first. Linked paths are rejected.
+- Failed copies/verification do not open an empty replacement portfolio.
+  Cleanup failures leave verified Diventra copies and report remaining old files.
+- Historical charts position points by calendar date and highlight the nearest
+  observation on hover with its full date and closing price, dividend per share,
+  or portfolio value. Forecast tooltips identify projected values.
+- Added calendar labels: 1M daily, 3M each Monday, 6M first/third Mondays,
+  1Y first Mondays, 5Y first Monday in January/July. Holidays retain their
+  calendar position; hover values always come from actual recorded observations.
+- Allocation and income bars show ticker and metric tooltips. Dividend event
+  dates are identified as recorded distribution/ex-dividend dates.
+- Preserved prior allocation, editing, exclusion, payout preview, and portfolio
+  features. No changes to the user's real data were made during development.
+- Passed 39 cumulative checks (final run at 150% scaling), new-user startup,
+  and old-format database startup migration. Reviewed all five chart ranges.
+- Complete source ZIP with build_windows.bat producing Diventra.exe. A compiled
+  EXE was not built or tested in this release session.
+
+==========================================================================
+VERSION 3.4.4
+Use available cash after remaining purchase candidates reach their targets
+
+- Fixed Add Cash and Rebalance stopping purchases at target allocation while
+  cash could still buy more whole shares of remaining eligible tickers.
+- Targets now guide purchase order instead of acting as spending caps. Each
+  share goes to the most underweight affordable eligible ticker; after targets
+  are reached, the least overweight candidate takes priority.
+- Continues until no eligible whole share is affordable. Whole-share prices
+  can prevent spending the exact entered dollar amount.
+- Example: $1,000 with only AIO eligible at $24.65 buys 40 shares for $986,
+  leaving $14 rather than stopping at 23 shares and leaving $433.05.
+- Applies the same rule after Remove, Add Back, and Reset in both planners.
+- Keeps exclusions and permanent targets unchanged. Zero-target tickers are
+  not purchase candidates, and Rebalance does not buy back its own sells.
+- Rebalance remains funded only by sale proceeds. Manual quantities remain
+  under user control and may intentionally leave additional cash.
+- Added an explanation of target priority and whole-share leftovers to plans.
+- Passed 30 cumulative tests, including 200 randomized portfolios tested in
+  both cash and rebalance modes for no affordable eligible cash left over,
+  plus startup/import validation. No user database changes.
+- Complete source ZIP; run build_windows.bat for Diventra.exe. No prebuilt
+  executable included and no executable build performed during validation.
+
+==========================================================================
+VERSION 3.4.3
+Live dividend payout comparison and Add Cash session exclusions
+
+- Added Current Dividend Payout % and New Dividend Payout % on separate lines
+  beneath the rebalance trades, with Current above New.
+- Current reflects all holdings when the plan opens. New reflects all holdings
+  after the displayed trades, including unchanged and excluded holdings.
+- New updates after Remove, Add Back, Reset Plan, and manual share edits.
+- Both use the dashboard's annualized dividend-income calculation divided by
+  invested holdings' market value at cached prices. Leftover cash is excluded.
+- Shared the annual dividend estimate helper with the dashboard to keep the
+  preview consistent with the displayed payout after applying trades.
+- Tooltips explain the estimate, cash treatment, and dividend-history basis.
+  No recorded dividend history contributes zero estimated income.
+- Invalid, oversold, or over-budget edits show a check-trades message instead of
+  a misleading projected percentage. No invested value displays a dash.
+- Added Remove/Add Back and Reset Plan to the Add Cash purchase plan.
+  Each change recomputes share quantities and remaining cash from the original
+  entered budget using the shared target-priority allocator. Exclusions are
+  session-only; permanent targets and holdings stay unchanged until apply.
+- Add Cash automatic recalculation asks before discarding manual edits, just
+  like Rebalance. All-excluded plans show the full entered cash as remaining.
+- Passed 26 cumulative regression checks, a 150% scaling payout-layout check,
+  and a fresh-process startup/import check. Reviewed offscreen renders.
+- No database schema changes or user-data modifications. Complete source ZIP;
+  build_windows.bat produces Diventra.exe. No prebuilt executable included.
+
+==========================================================================
+VERSION 3.4.2
+Clearer trade groups and unclipped plan buttons
+
+- Increased trade-row space and reduced button padding so Remove and Add Back
+  labels fit without vertical clipping, including at 150% display scaling.
+- Added full-width amber SELLS and green BUYS section bands with live subtotals.
+- Added Sell first / Then buy labels and subtly tinted trade rows. Meaning is
+  conveyed by text as well as color. Excluded tickers have a separate gray band.
+- Kept SELLS first and tickers alphabetized within their sections.
+- Added the selected portfolio name to Add Funds and Rebalance window titles.
+- Sized the initial plan window to available screen space and shortened the
+  amount-column heading for narrower windows.
+- Added explanatory Remove/Add Back tooltips.
+- Preserved allocation, legacy-rounding handling, editing, reset, and applying.
+- Passed 23 cumulative checks at 100% and 150% Qt scaling and the startup check.
+  Reviewed offscreen plan renders. No saved portfolio data was changed.
+- Complete source release; build_windows.bat produces Diventra.exe. No compiled
+  executable is included, and a PyInstaller build was not performed.
+
+==========================================================================
+VERSION 3.4.1
+Portfolio-switch planning fix and target rounding correction
+
+- Fixed Add Cash closing without displaying its purchase plan and Rebalance
+  appearing unresponsive for portfolios with a tiny negative saved target.
+- Identified the cause: the previous weight-save method assigned all rounding
+  residual to the final ticker, potentially turning a zero target into -0.02%.
+  The allocator rejected that target, but the earlier validation missed it.
+- Replaced that rounding method with distribution of whole hundredths across
+  positive weights. Saved targets total 100.00% and zero weights stay zero.
+- The weight dialog preview now uses the same rounding as the saved values.
+- Plans tolerate legacy negative rounding residuals totaling at most 0.05
+  percentage points when saved targets already total approximately 100%.
+  For that plan only, negative targets become zero and positive targets are
+  proportionally adjusted to 100%. A visible note explains the adjustment.
+- Existing saved targets and share quantities are not automatically changed.
+  Saving Adjust by Weight uses the corrected method for a permanent correction.
+- Invalid prices, shares, larger negative targets, non-finite values, and empty
+  portfolios produce an explanatory message instead of failing silently.
+- Direct target editing now rejects non-finite numbers.
+- Retained v3.4 allocation priority, Remove/Add Back, Reset Plan, manual editing,
+  Apply Trades, all earlier features, and the existing database location/schema.
+- Passed 22 cumulative regression checks, including repeated portfolio switches,
+  both plan windows, legacy-target handling, unchanged saved data, and rounding.
+- Passed the real application entry-point startup/import check with temporary
+  data. The old failure was separately reproduced for both workflows.
+- Windows build script produces Diventra.exe. Complete source is included;
+  no prebuilt executable or live brokerage/network validation is included.
+
+==========================================================================
+VERSION 3.4
+Allocation, rebalance controls, and simpler relative weights
+==========================================================================
+
+Adjust Target Allocation by Weight
+- Opening the dialog now converts saved target percentages into simple relative
+  weights using the median positive target as the reference weight of 1.
+- Example: 14.06%, 28.13%, 14.06%, 14.06%, 14.06%, 1.41%, 14.06% opens as
+  approximately 1, 2, 1, 1, 1, 0.1, 1.
+- Whole-number weights display without unnecessary decimal places: 1 rather
+  than 1.00, and 2 rather than 2.00.
+- Zero targets remain zero. Ratios are rounded to two decimal places.
+- Retained single-click selection of the full weight value.
+- Opening or canceling the dialog does not change saved targets.
+- Original relative weights cannot be uniquely recovered from percentages;
+  this provides a consistent, simplified representation.
+
+Shared Add Cash and Rebalance allocation
+- Replaced the separate purchase-selection calculations with one shared
+  whole-share allocation engine.
+- Among affordable, eligible, underweight holdings, the next share goes to
+  the holding with the largest percentage-point shortfall from its target.
+- Recalculates projected holding weights after each purchased share.
+- A cheaper stock no longer takes priority merely because more of its shares
+  fit into the budget while a more-underweight stock is affordable.
+- Exact priority ties are resolved alphabetically by ticker.
+- Unspent plan cash remains part of total projected portfolio value.
+- Purchases stop when no eligible underweight holding is affordable.
+- Rebalance sells whole shares from the amount above target and retains
+  fractional shares already owned.
+- Pure rebalance purchases remain limited to sale proceeds. New money is
+  handled through Add Cash.
+
+Rebalance presentation and live totals
+- Lists SELLS first, alphabetically by ticker.
+- Lists BUYS second, alphabetically by ticker.
+- Labels the SELL, BUY, and EXCLUDED groups.
+- Shows live sale proceeds, purchase costs, and cash remaining.
+- Excluded tickers remain visible below the active trade groups.
+
+Remove, Add Back, and Reset Plan
+- Added a Remove button for each proposed rebalance ticker.
+- Remove excludes that ticker only for the current rebalance session and
+  immediately regenerates the complete automatic plan.
+- The excluded ticker's button becomes Add Back.
+- Add Back restores eligibility and immediately regenerates the plan.
+- Removing a SELL reduces available proceeds and recalculates purchases.
+- Removing a BUY redistributes purchases among remaining eligible holdings
+  according to the shared target-priority calculation.
+- Exclusion does not change permanent target percentages or renormalize the
+  targets around the remaining tickers.
+- Added Reset Plan to clear all exclusions and regenerate the automatic plan.
+
+Manual editing and applying trades
+- Retained Edit Trades and Apply Trades to Portfolio.
+- The window identifies automatic planning versus manual trade editing.
+- Manual quantities remain fixed until the user chooses to regenerate.
+- Remove, Add Back, or Reset after entering manual mode asks before discarding
+  the edited quantities. Canceling preserves the manual plan.
+- Applying trades retains quantity validation, budget checks, confirmation,
+  checks for changed holdings, and transactional local portfolio updates.
+- Applying trades remains local bookkeeping and does not place brokerage orders.
+
+Compatibility, packaging, and validation
+- Built on the v3.3.1 baseline, preserving its dashboard and earnings fixes
+  together with the v3.3 features.
+- Kept the database location, schema initialization, and preferences functions
+  unchanged from v3.3.1.
+- Updated application and build labels to v3.4.
+- Windows build script produces dist\Diventra.exe.
+- Delivered the complete source ZIP, requirements, build script, documentation,
+  and regression/startup tests.
+- Passed 18 regression checks and the application startup/import check.
+- Checked 300 randomized portfolios with three exclusion configurations each
+  for sale-funded budgets, exclusions, whole shares, and sale limits.
+- Verified Python syntax, retained baseline function/class names, and ZIP
+  contents. A prebuilt executable was not included or tested.
+
+==========================================================================
+VERSION 3.3.1
+Dashboard sizing and earnings transparency
+==========================================================================
+
+Dashboard layout
+- Corrected the oversized dashboard so it fits within the application window.
+- Removed the outer dashboard scroll area.
+- Preserved vertical scrolling inside the holdings list for large portfolios.
+- Arranged charts in one compact row.
+- Made font sizes respond to available window space.
+- Adjusted ticker columns to fit available width without horizontal scrolling
+  in the tested layouts.
+- Adjusted the portfolio selector so it does not overlap neighboring controls.
+- Preserved maximized startup and Qt handling of Windows display scaling.
+
+Top 10 Earners
+- Made the ranking basis explicit: total dollar earnings.
+- Added a selected-ticker calculation breakdown showing starting price/date,
+  cached current price, latest historical date, share count, dividends, and
+  the return calculation.
+- Investigated the reported SNDK percentage and second-place ranking using the
+  screenshot inputs; the release record found the displayed arithmetic and
+  dollar-ranking order consistent with those inputs.
+- Added SNDK_CHECK.md documenting that investigation and the current-share-count
+  assumption. No SNDK-specific price, percentage, or rank was hardcoded.
+
+Compatibility, packaging, and validation
+- Retained all v3.3 features and existing database compatibility.
+- Updated application and build labels to v3.3.1.
+- Delivered an updated complete source ZIP and Windows build script.
+- Passed 12 offline regression checks, including display-scaling checks at
+  100% and 150%, plus the startup/import and maximized-launch check.
+- Tested dashboard sizes from 1024 x 640 through 1920 x 1000 with 82 holdings.
+- Reviewed dashboard and earnings-window renders.
+
+==========================================================================
+VERSION 3.3
+Share editing, dividend countdown, growth controls, and Add Cash trade entry
+==========================================================================
+
+Shares editing
+- Removed the dedicated Edit Shares column.
+- Double-clicking a Shares cell now opens the share-quantity editor.
+- Preserved read-only behavior in View All Portfolios.
+- Adjusted target-cell editing to account for the shifted table columns.
+
+Next-dividend countdown
+- Added the countdown beneath Refresh Now and Settings.
+- Uses positive-share holdings in the selected portfolio; View All covers
+  holdings across portfolios.
+- Displays tied tickers when multiple holdings share the next estimated date.
+- Updates when portfolio selection or market data changes and once per minute.
+- Handles portfolios with no available upcoming estimate.
+- Labels the dates as history-based estimates. Existing market data does not
+  establish confirmed future payment dates and may represent ex-dividend dates.
+
+Weight editor
+- A single click selects the entire displayed weight for easy replacement.
+- Preserved protection against accidental changes from the mouse wheel.
+
+Expected Growth
+- Replaced the Years to Project control with an integer spinner for 1-50 years.
+- Fixed the up arrow while retaining working down-arrow behavior.
+- Sized the arrow controls separately for usability.
+- Disabled accidental year changes from the mouse wheel.
+- Arranged the summary vertically in this order:
+    Starting Balance
+    Projected Ending Balance
+    Projected Growth
+    Cumulative Dividends
+- Used the label Cumulative Dividends for accumulated reinvested dividends.
+- Enlarged the initial window, up to 1180 x 960 subject to available screen space.
+- Made ordinary ten-year results fit in the reviewed layout.
+- Preserved scrolling for long projections such as 50 years and smaller screens.
+
+Add Cash / Add Funds Purchase Plan
+- Added Edit Trades so suggested whole-share purchases can be adjusted to the
+  quantities actually completed.
+- Added Apply Trades to Portfolio, matching the existing Rebalance workflow.
+- Recalculates estimated purchase amounts and cash remaining after edits.
+- A zero quantity omits a purchase that was not completed.
+- Requires confirmation before updating local share quantities.
+- Closes the plan after successfully applying the confirmed trades.
+- Does not place or verify brokerage orders.
+
+Trade validation and reliability
+- Both trade-plan editors reject fractional, negative, non-finite, invalid,
+  oversold, and over-budget quantities.
+- Rejects applying a plan when relevant recorded holdings have changed since
+  the plan was opened.
+- Applies changes transactionally to the portfolio captured when opening the
+  plan, preserving other portfolios.
+- Fixed recursive table-change notifications during summary updates.
+- Fixed prompt database connection cleanup on Windows.
+- Preserved the existing Rebalance Edit Trades / Apply Trades workflow.
+
+Compatibility, packaging, and validation
+- Preserved the v3.2 feature set, saved portfolios, and preferences.
+- Retained the existing local data folder and early single-portfolio migration.
+- Updated the Windows build script to produce Diventra.exe using a local virtual
+  environment, with dependency installation and build-failure checks.
+- Delivered complete source, requirements, documentation, and tests.
+- Passed 10 regression checks and full startup/import validation.
+- Reviewed the dashboard, Expected Growth, and purchase-plan layouts.
+- The enlarged dashboard layout was subsequently refined in v3.3.1.
+
+==========================================================================
+VERSION 3.2
+Editable rebalance trades and Top 10 Earners
+==========================================================================
+
+Confirmed additions in the v3.2 release notes
+- Added Edit Trades to the Rebalance Portfolio plan.
+- Allowed whole-share quantity changes when not every suggested trade was
+  actually completed.
+- Prevented edited plans from selling more shares than Diventra records.
+- Prevented edited rebalance purchases from exceeding sale proceeds.
+- Added Apply Trades to Portfolio with confirmation.
+- Applying trades updates only local Diventra holdings and never places
+  brokerage orders.
+- Added Top 10 Earners at the bottom-center of the dashboard.
+- Ranked current holdings by trailing-12-month dollar earnings: price gain or
+  loss on the current position plus cash dividends.
+- Explained the current-share-count and no-reinvestment assumptions in the
+  Top 10 screen.
+- Combined duplicate tickers across portfolios for View All Top 10 calculations.
+
+Inherited features confirmed in the v3.2 baseline
+These existed by v3.2; the available records do not establish which earlier
+version first introduced each feature.
+- Portfolio dashboard and multiple portfolio management.
+- View All Portfolios.
+- Holdings, ticker details, and share/target editing.
+- Market-data refresh and local market cache.
+- Portfolio allocation, income, and history charts.
+- Target percentages and adjustment by relative weights.
+- Expected Growth projections.
+- Add Cash purchase planning.
+- Rebalance planning funded by sale proceeds.
+- Saved preferences and a local SQLite portfolio database.
+- Compatibility handling for the earlier single-portfolio database format.
+
+==========================================================================
+SOURCE NOTES AND HISTORY LIMITS
+==========================================================================
+
+Sources reviewed:
+- Diventra_v3.4 README.md, VALIDATION.md, source, and regression tests.
+- Diventra_v3.3.1 README.md, VALIDATION.md, and SNDK_CHECK.md.
+- The retained v3.3, v3.3.1, and v3.4 update and packaging scripts.
+- README.md inside the original Diventra_v3.2_COMPLETE.zip.
+- Available records from Create Stock Dividend App and Build Diventra v3.3.
+
+No verified release-by-release notes for v3.1 or earlier were available in the
+reviewed material. Their inherited features are recorded above under the v3.2
+baseline rather than assigned to an invented release history.
+
+This document records historical updates. It is not a fresh verification of
+historical market prices or a claim that every release included a compiled EXE.
