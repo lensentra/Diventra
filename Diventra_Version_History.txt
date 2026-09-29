@@ -1,3 +1,6 @@
+Diventra v3.6.0 — 2026-09-29
+Fixed current-ownership-weighted dividend projection; revised income table; double-click trade editing; Restore Trade Recommendations; Settings redesign with local privacy, backups, appearance, version and verified automatic updates. Includes a Windows executable.
+
 Diventra v3.5.2 — 2026-09-29
 Historical constant-yield projection; displayed assumptions and annual yields; dividend event hover/guides; right value axes; available next distribution amounts; compact columns and exterior year buttons. 49 regression checks and two startup checks passed.
 
