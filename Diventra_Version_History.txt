@@ -1,3 +1,9 @@
+V3.7.0 — 2026-09-30
+Gold branding, frameless windows, Add Ticker quantity and repeated save, adjustable persisted columns, mandatory verified updates, 1D/1W charts, available-history scaling, issuer dividend precision/announcements, combined portfolio analytics. See README.md and VALIDATION.md for behavior and limitations. Previous records below are historical.
+
+V3.6.1 — 2026-09-29
+Current release: requested Settings, backup, release notes and updater repairs complete. See README.md and VALIDATION.md. Supersedes prior privacy-display, countdown and manual-install behavior. Prior records below are historical.
+
 Diventra v3.6.0 — 2026-09-29
 Fixed current-ownership-weighted dividend projection; revised income table; double-click trade editing; Restore Trade Recommendations; Settings redesign with local privacy, backups, appearance, version and verified automatic updates. Includes a Windows executable.
 
