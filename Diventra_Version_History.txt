@@ -1,3 +1,13 @@
+# Diventra V3.7.1 — October 1, 2026
+
+This release adds top-right minimize/maximize controls, centered welcome branding, combined ticker details in All Portfolios, fitted adjustable columns, 15-minute automatic update checks when enabled, inline-only no-update results, a quote-delay warning, and weekday/date labels distinguishing payment dates from estimated ex-dates.
+
+Run dist/Diventra.exe; no separate graphics or Python installation is needed. Close the old copy first. Existing data stays in %LOCALAPPDATA%/Diventra. Nothing has been uploaded to GitHub or installed over your current copy.
+
+Windows receives targeted icon-refresh notifications at startup, replacement and rollback. This may address stale Explorer icons; the originally reported Desktop behavior has not been independently reproduced. No global icon-cache reset is performed.
+
+Historical release information follows; earlier column overflow and six-hour update behavior are superseded above.
+
 V3.7.0 — 2026-09-30
 Gold branding, frameless windows, Add Ticker quantity and repeated save, adjustable persisted columns, mandatory verified updates, 1D/1W charts, available-history scaling, issuer dividend precision/announcements, combined portfolio analytics. See README.md and VALIDATION.md for behavior and limitations. Previous records below are historical.
 
